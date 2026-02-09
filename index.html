@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receiptly — AI Factuur Extractor voor ZZP &amp; MKB</title>
+    <meta name="description" content="Upload een factuur of bon, AI leest alle data uit in 3 seconden. Exporteer als CSV voor je boekhouding. Gratis te proberen.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --blue: #2563EB;
+            --blue-dark: #1D4ED8;
+            --blue-light: #EFF6FF;
+            --gray-50: #F8FAFC;
+            --gray-100: #F1F5F9;
+            --gray-200: #E2E8F0;
+            --gray-500: #64748B;
+            --gray-700: #334155;
+            --gray-900: #0F172A;
+            --green: #10B981;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+
+        /* Nav */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .logo {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            text-decoration: none;
+        }
+
+        .logo span { color: var(--blue); }
+
+        nav a.cta-nav {
+            background: var(--blue);
+            color: #fff;
+            padding: 0.6rem 1.4rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: background 0.2s;
+        }
+
+        nav a.cta-nav:hover { background: var(--blue-dark); }
+
+        /* Hero */
+        .hero {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem 3rem;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--blue-light);
+            color: var(--blue);
+            padding: 0.35rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            line-height: 1.15;
+            margin-bottom: 1.25rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 span { color: var(--blue); }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--gray-500);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--blue);
+            color: #fff;
+            padding: 0.85rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); }
+
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            padding: 0.85rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: background 0.2s;
+        }
+
+        .btn-secondary:hover { background: var(--gray-200); }
+
+        .hero-sub {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray-500);
+        }
+
+        /* Demo image */
+        .demo-section {
+            max-width: 900px;
+            margin: 2rem auto 0;
+            padding: 0 1.5rem;
+        }
+
+        .demo-box {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            padding: 2.5rem;
+            text-align: center;
+        }
+
+        .demo-box .demo-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .demo-step {
+            background: #fff;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 1.5rem;
+            width: 200px;
+            text-align: center;
+        }
+
+        .demo-step .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .demo-step h4 { font-size: 0.95rem; margin-bottom: 0.25rem; }
+        .demo-step p { font-size: 0.8rem; color: var(--gray-500); }
+
+        .demo-arrow {
+            font-size: 1.5rem;
+            color: var(--gray-500);
+        }
+
+        /* Problem */
+        .problem {
+            background: var(--gray-50);
+            padding: 4rem 1.5rem;
+            margin-top: 4rem;
+        }
+
+        .problem-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .problem h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .problem p {
+            font-size: 1.1rem;
+            color: var(--gray-500);
+            margin-bottom: 2rem;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            text-align: left;
+        }
+
+        .comp-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--gray-200);
+        }
+
+        .comp-card.old { border-top: 3px solid #EF4444; }
+        .comp-card.new { border-top: 3px solid var(--green); }
+
+        .comp-card h3 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .comp-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comp-card ul li {
+            padding: 0.35rem 0;
+            font-size: 0.95rem;
+            color: var(--gray-700);
+        }
+
+        /* Features */
+        .features {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .features > p {
+            text-align: center;
+            color: var(--gray-500);
+            margin-bottom: 2.5rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--gray-200);
+        }
+
+        .feature-card .icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .feature-card h3 { font-size: 1.05rem; margin-bottom: 0.4rem; }
+        .feature-card p { font-size: 0.9rem; color: var(--gray-500); }
+
+        /* Pricing */
+        .pricing {
+            background: var(--gray-50);
+            padding: 4rem 1.5rem;
+        }
+
+        .pricing-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .pricing h2 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .pricing > .pricing-inner > p { color: var(--gray-500); margin-bottom: 2.5rem; }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            text-align: left;
+        }
+
+        .price-card {
+            background: #fff;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .price-card.featured {
+            border: 2px solid var(--blue);
+            position: relative;
+        }
+
+        .price-card.featured::after {
+            content: 'Populair';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--blue);
+            color: #fff;
+            padding: 0.2rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .price-card h3 { font-size: 1.1rem; margin-bottom: 0.25rem; }
+
+        .price-card .price {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .price-card .price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--gray-500);
+        }
+
+        .price-card .desc {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+            margin-bottom: 1.25rem;
+        }
+
+        .price-card ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .price-card ul li {
+            padding: 0.3rem 0;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+        }
+
+        .price-card ul li::before {
+            content: '\2713';
+            color: var(--green);
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        .price-card a {
+            display: block;
+            text-align: center;
+            padding: 0.7rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .price-card a.btn-outline {
+            border: 1px solid var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .price-card a.btn-outline:hover { background: var(--gray-50); }
+
+        .price-card a.btn-fill {
+            background: var(--blue);
+            color: #fff;
+        }
+
+        .price-card a.btn-fill:hover { background: var(--blue-dark); }
+
+        /* CTA */
+        .final-cta {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 5rem 1.5rem;
+            text-align: center;
+        }
+
+        .final-cta h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .final-cta p {
+            color: var(--gray-500);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--gray-200);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            color: var(--gray-500);
+            font-size: 0.85rem;
+        }
+
+        footer a { color: var(--gray-500); text-decoration: none; }
+        footer a:hover { color: var(--gray-900); }
+
+        /* Mobile */
+        @media (max-width: 640px) {
+            .comparison { grid-template-columns: 1fr; }
+            .demo-arrow { display: none; }
+            .demo-flow { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+    <a href="/" class="logo">Receiptly<span>.</span></a>
+    <a href="https://docstream-nuycd3h4sngvymjscxct36.streamlit.app/" class="cta-nav">Gratis proberen</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="badge">Nu gratis te testen</div>
+    <h1>Facturen uitlezen<br>met <span>AI</span>, niet met je handen</h1>
+    <p>Upload een factuur of bon. Receiptly leest alle data uit in 3 seconden. Exporteer als CSV voor je boekhouding.</p>
+    <div class="cta-group">
+        <a href="https://docstream-nuycd3h4sngvymjscxct36.streamlit.app/" class="btn-primary">Gratis proberen</a>
+        <a href="https://github.com/Unkown607/docstream" class="btn-secondary">Bekijk op GitHub</a>
+    </div>
+    <p class="hero-sub">Geen account nodig. Geen creditcard.</p>
+</section>
+
+<!-- Demo flow -->
+<section class="demo-section">
+    <div class="demo-box">
+        <div class="demo-flow">
+            <div class="demo-step">
+                <div class="icon">&#128196;</div>
+                <h4>1. Upload</h4>
+                <p>PDF, foto of scan van je factuur</p>
+            </div>
+            <div class="demo-arrow">&#8594;</div>
+            <div class="demo-step">
+                <div class="icon">&#129302;</div>
+                <h4>2. AI Extractie</h4>
+                <p>Leverancier, bedragen, BTW, regelitems</p>
+            </div>
+            <div class="demo-arrow">&#8594;</div>
+            <div class="demo-step">
+                <div class="icon">&#128202;</div>
+                <h4>3. Exporteer</h4>
+                <p>Download als CSV voor je boekhouding</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Problem -->
+<section class="problem">
+    <div class="problem-inner">
+        <h2>Stop met overtypen</h2>
+        <p>Elke maand hetzelfde verhaal: facturen handmatig invoeren in je boekhouding. Fouten, tijdverlies, frustratie.</p>
+        <div class="comparison">
+            <div class="comp-card old">
+                <h3>Zonder Receiptly</h3>
+                <ul>
+                    <li>&#10060; Handmatig overtypen per factuur</li>
+                    <li>&#10060; 5-10 minuten per document</li>
+                    <li>&#10060; Typefouten in bedragen</li>
+                    <li>&#10060; BTW-regels handmatig checken</li>
+                </ul>
+            </div>
+            <div class="comp-card new">
+                <h3>Met Receiptly</h3>
+                <ul>
+                    <li>&#9989; Automatisch uitlezen met AI</li>
+                    <li>&#9989; 3 seconden per document</li>
+                    <li>&#9989; 95-98% nauwkeurigheid</li>
+                    <li>&#9989; CSV-export, klaar voor je boekhouding</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="features">
+    <h2>Alles wat je nodig hebt</h2>
+    <p>Geen ingewikkelde setup. Upload, controleer, exporteer.</p>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="icon">&#128196;</div>
+            <h3>PDF &amp; Foto's</h3>
+            <p>Upload PDF's, PNG's, JPG's of WebP. Werkt ook met foto's van bonnen.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon">&#127475;&#127473;</div>
+            <h3>Nederlands-first</h3>
+            <p>Geoptimaliseerd voor Nederlandse en Europese factuurformaten en BTW-regels.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon">&#128202;</div>
+            <h3>CSV &amp; JSON Export</h3>
+            <p>Download als CSV (puntkomma-gescheiden voor Excel) of JSON voor automatisering.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon">&#9889;</div>
+            <h3>3 Seconden</h3>
+            <p>Volledige extractie in gemiddeld 3 seconden. Geen wachtrij, geen vertraging.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon">&#128270;</div>
+            <h3>Regelitems</h3>
+            <p>Extraheert niet alleen totalen, maar ook individuele regelitems met prijzen.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon">&#128274;</div>
+            <h3>Privacy</h3>
+            <p>Documenten worden niet opgeslagen. Verwerking en klaar. GDPR-compliant.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing">
+    <div class="pricing-inner">
+        <h2>Simpele prijzen</h2>
+        <p>Start gratis. Upgrade wanneer je wilt.</p>
+        <div class="pricing-grid">
+            <div class="price-card">
+                <h3>Gratis</h3>
+                <div class="price">&euro;0 <span>/maand</span></div>
+                <div class="desc">Perfect om te proberen</div>
+                <ul>
+                    <li>10 documenten per maand</li>
+                    <li>CSV &amp; JSON export</li>
+                    <li>Alle bestandsformaten</li>
+                </ul>
+                <a href="https://docstream-nuycd3h4sngvymjscxct36.streamlit.app/" class="btn-outline">Start gratis</a>
+            </div>
+            <div class="price-card featured">
+                <h3>Starter</h3>
+                <div class="price">&euro;19 <span>/maand</span></div>
+                <div class="desc">Voor ZZP'ers</div>
+                <ul>
+                    <li>100 documenten per maand</li>
+                    <li>CSV &amp; JSON export</li>
+                    <li>Email support</li>
+                    <li>Bulk verwerking</li>
+                </ul>
+                <a href="mailto:info@novexhq.com?subject=Interesse%20Receiptly%20Starter" class="btn-fill">Neem contact op</a>
+            </div>
+            <div class="price-card">
+                <h3>Pro</h3>
+                <div class="price">&euro;39 <span>/maand</span></div>
+                <div class="desc">Voor MKB &amp; boekhouders</div>
+                <ul>
+                    <li>500 documenten per maand</li>
+                    <li>API toegang</li>
+                    <li>Prioriteit support</li>
+                    <li>Boekhouding integratie</li>
+                </ul>
+                <a href="mailto:info@novexhq.com?subject=Interesse%20Receiptly%20Pro" class="btn-fill">Neem contact op</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Final CTA -->
+<section class="final-cta">
+    <h2>Klaar om te beginnen?</h2>
+    <p>Upload je eerste factuur en zie zelf hoe snel het gaat. Gratis, geen account nodig.</p>
+    <a href="https://docstream-nuycd3h4sngvymjscxct36.streamlit.app/" class="btn-primary">Probeer Receiptly gratis</a>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; 2026 Novex HQ &middot; <a href="mailto:info@novexhq.com">info@novexhq.com</a> &middot; <a href="https://github.com/Unkown607/docstream">GitHub</a></p>
+</footer>
+
+</body>
+</html>
